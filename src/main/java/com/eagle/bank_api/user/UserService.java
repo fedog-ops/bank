@@ -23,10 +23,6 @@ public class UserService {
         return UserMapper.toDto(savedUser);
     }
 
-    public Boolean existsByEmail(String email){
-        return userRepository.existsByEmail(email);
-    }
-
     public User findByEmail(String email){
         return userRepository.findByEmail(email);
     }

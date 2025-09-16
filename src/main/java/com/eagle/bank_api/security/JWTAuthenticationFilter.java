@@ -1,12 +1,12 @@
 package com.eagle.bank_api.security;
 
-import com.eagle.bank_api.error.UnauthorizedException;
 import com.eagle.bank_api.user.UserService;
 import com.eagle.bank_api.user.entity.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,26 +43,27 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
             return;
         }
 
-        String email;
         try{
-            email = jwtService.extractEmail(token);
+            String email = jwtService.extractEmail(token);
+            User user = userService.findByEmail(email);
+
+            if(user == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    user.getUserId(),
+                    null,
+                    List.of(new SimpleGrantedAuthority("ROLE_USER"))
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
         } catch (Exception e) {
-            throw new UnauthorizedException("Invalid token");
+            System.out.println(e.getMessage());
         }
 
-        User user = userService.findByEmail(email);
-
-        if(user == null) {
-            throw new UnauthorizedException("User not found");
-        }
-
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                user.getUserId(),
-                null,
-                List.of(new SimpleGrantedAuthority("ROLE_USER"))
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
     }
 

@@ -21,4 +21,11 @@ public class UserController {
         UserResponse response = userService.createUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResponse> fetchUserByID(@PathVariable String userId){
+        UserResponse response = userService.findById(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 }

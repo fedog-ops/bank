@@ -18,9 +18,17 @@ public class UserService {
     }
 
     public UserResponse createUser(CreateUserRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new AccessDeniedException("Email already in use");
+        }
+
         User user = UserMapper.toEntity(request);
         User savedUser = userRepository.save(user);
         return UserMapper.toDto(savedUser);
+    }
+
+    public Boolean existsByEmail(String email){
+        return userRepository.existsByEmail(email);
     }
 
     public User findByEmail(String email){

@@ -33,6 +33,8 @@ public class User {
     private Address address;
 
     private String number;
+
+    @Column(unique = true)
     private String email;
 
     @CreationTimestamp

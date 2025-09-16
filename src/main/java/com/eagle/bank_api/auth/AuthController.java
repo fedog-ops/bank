@@ -1,6 +1,5 @@
 package com.eagle.bank_api.auth;
 
-import com.eagle.bank_api.error.UnauthorizedException;
 import com.eagle.bank_api.security.JWTService;
 import com.eagle.bank_api.user.UserService;
 import jakarta.validation.Valid;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.AccessDeniedException;
 
 @RestController
 @RequestMapping("/v1/auth")
@@ -27,7 +27,7 @@ public class AuthController {
       boolean isValidUser = userService.existsByEmail(request.getEmail());
 
         if (!isValidUser) {
-            throw new UnauthorizedException("Unauthorized");
+            throw new AccessDeniedException("Unauthorized");
         }
 
         String token = jwtService.generateToken(request.getEmail());

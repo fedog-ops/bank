@@ -31,7 +31,6 @@ public class SecurityConfig {
                             authorizeHttp.anyRequest().authenticated();
                         }
                 )
-//                .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(new JWTAuthenticationFilter(jwtService, userService), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
